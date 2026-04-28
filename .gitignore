@@ -1,0 +1,18 @@
+# --- PlatformIO (C++ Edge Core) ---
+.pio/
+.vscode/
+
+# --- Python (Cloud Core & API) ---
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env
+
+# --- Jupyter / Google Colab (Notebooks) ---
+.ipynb_checkpoints/
+
+# --- OS Junk ---
+.DS_Store
+Thumbs.db

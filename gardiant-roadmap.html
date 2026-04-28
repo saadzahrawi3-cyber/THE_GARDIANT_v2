@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GARDIANT — Learning Journey</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #030507;
+    --panel: rgba(10, 14, 20, 0.85);
+    --border: rgba(255,255,255,0.06);
+    --red: #ff2a2a;
+    --red-dim: rgba(255,42,42,0.12);
+    --red-glow: rgba(255,42,42,0.4);
+    --cyan: #00e5ff;
+    --cyan-dim: rgba(0,229,255,0.1);
+    --gold: #ffd166;
+    --text: #e8eaed;
+    --muted: #6b7280;
+    --green: #22d3a5;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── ANIMATED GRID BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,42,42,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,42,42,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ── SCAN LINE ── */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -100%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255,42,42,0.6), transparent);
+    animation: scan 8s linear infinite;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  @keyframes scan {
+    0%   { top: -2px; }
+    100% { top: 100vh; }
+  }
+
+  /* ── WRAPPER ── */
+  .wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 60px 24px 100px;
+    position: relative;
+    z-index: 10;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    text-align: center;
+    margin-bottom: 70px;
+  }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 18px;
+    display: block;
+    animation: fadeInDown 0.8s ease both;
+  }
+
+  h1 {
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 800;
+    letter-spacing: -3px;
+    line-height: 0.9;
+    animation: fadeInDown 0.8s 0.1s ease both;
+  }
+
+  h1 .eye {
+    color: var(--red);
+    text-shadow: 0 0 40px var(--red-glow), 0 0 80px var(--red-glow);
+    display: inline-block;
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { text-shadow: 0 0 40px var(--red-glow), 0 0 80px var(--red-glow); }
+    50%       { text-shadow: 0 0 60px var(--red-glow), 0 0 120px var(--red-glow); }
+  }
+
+  .subtitle {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 20px;
+    animation: fadeInDown 0.8s 0.2s ease both;
+  }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 22px 28px;
+    margin-bottom: 60px;
+    backdrop-filter: blur(16px);
+    animation: fadeInDown 0.8s 0.3s ease both;
+  }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .progress-pct {
+    color: var(--red);
+    font-weight: 600;
+    text-shadow: 0 0 10px var(--red-glow);
+  }
+
+  .progress-track {
+    height: 4px;
+    background: rgba(255,255,255,0.04);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--red);
+    width: 0%;
+    transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
+    box-shadow: 0 0 12px var(--red);
+  }
+
+  /* ── PHASE CARDS ── */
+  .phase {
+    margin-bottom: 32px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    backdrop-filter: blur(16px);
+    position: relative;
+    overflow: hidden;
+    animation: fadeInUp 0.6s ease both;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .phase:hover {
+    border-color: rgba(255,42,42,0.25);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,42,42,0.05);
+  }
+
+  .phase-header {
+    padding: 28px 32px 0;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .phase-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .phase-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .phase-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+  }
+
+  .phase-milestone {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    padding: 6px 12px;
+    border: 1px solid;
+    margin-top: 14px;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+  }
+
+  .phase-milestone .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+    animation: blink 2s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+  }
+
+  /* Color variants per phase */
+  .c-red    { color: var(--red);   border-color: rgba(255,42,42,0.3);   background: var(--red-dim); }
+  .c-red .dot    { background: var(--red);   box-shadow: 0 0 6px var(--red); }
+
+  .c-cyan   { color: var(--cyan);  border-color: rgba(0,229,255,0.3);  background: var(--cyan-dim); }
+  .c-cyan .dot   { background: var(--cyan);  box-shadow: 0 0 6px var(--cyan); }
+
+  .c-gold   { color: var(--gold);  border-color: rgba(255,209,102,0.3); background: rgba(255,209,102,0.08); }
+  .c-gold .dot   { background: var(--gold);  box-shadow: 0 0 6px var(--gold); }
+
+  .c-green  { color: var(--green); border-color: rgba(34,211,165,0.3);  background: rgba(34,211,165,0.08); }
+  .c-green .dot  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+
+  .c-white  { color: #fff;         border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); }
+  .c-white .dot  { background: #fff;         box-shadow: 0 0 6px #fff; }
+
+  /* ── TOGGLE CHEVRON ── */
+  .toggle-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    width: 32px; height: 32px;
+    flex-shrink: 0;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s ease;
+    margin-top: 2px;
+  }
+
+  .toggle-btn svg {
+    transition: transform 0.3s ease;
+  }
+
+  .phase.open .toggle-btn {
+    border-color: rgba(255,42,42,0.4);
+    color: var(--red);
+  }
+
+  .phase.open .toggle-btn svg {
+    transform: rotate(180deg);
+  }
+
+  /* ── PHASE BODY ── */
+  .phase-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .phase.open .phase-body {
+    max-height: 2000px;
+  }
+
+  .phase-inner {
+    padding: 0 32px 28px;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 24px;
+  }
+
+  /* ── TASKS ── */
+  .task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .task-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    cursor: pointer;
+    padding: 14px 16px;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .task-item:hover {
+    border-color: var(--border);
+    background: rgba(255,255,255,0.02);
+  }
+
+  .task-item.done {
+    opacity: 0.5;
+  }
+
+  .task-item.done .task-text {
+    text-decoration: line-through;
+    color: var(--muted);
+  }
+
+  .task-cb {
+    width: 18px; height: 18px;
+    border: 1.5px solid var(--muted);
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .task-item.done .task-cb {
+    background: var(--red);
+    border-color: var(--red);
+    box-shadow: 0 0 8px var(--red-glow);
+  }
+
+  .task-cb svg { display: none; }
+  .task-item.done .task-cb svg { display: block; }
+
+  .task-content {
+    flex: 1;
+  }
+
+  .task-text {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    font-weight: 400;
+    color: var(--text);
+  }
+
+  .task-gardiant {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--red);
+    margin-top: 5px;
+    opacity: 0.9;
+  }
+
+  /* ── LEARN CHIP ── */
+  .learns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .chip {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    padding: 3px 8px;
+    border: 1px solid rgba(255,255,255,0.08);
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* ── PHASE PROGRESS BAR ── */
+  .phase-progress {
+    height: 2px;
+    background: rgba(255,255,255,0.04);
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+  }
+
+  .phase-progress-fill {
+    height: 100%;
+    background: var(--red);
+    width: 0%;
+    transition: width 0.6s ease;
+    box-shadow: 0 0 8px var(--red);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .phase:nth-child(1) { animation-delay: 0.1s; }
+  .phase:nth-child(2) { animation-delay: 0.15s; }
+  .phase:nth-child(3) { animation-delay: 0.2s; }
+  .phase:nth-child(4) { animation-delay: 0.25s; }
+  .phase:nth-child(5) { animation-delay: 0.3s; }
+  .phase:nth-child(6) { animation-delay: 0.35s; }
+  .phase:nth-child(7) { animation-delay: 0.4s; }
+
+  /* ── TASK DETAILS ── */
+  .task-details {
+    margin-top: 10px;
+    margin-bottom: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding-left: 4px;
+    border-left: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .detail-item {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
+    line-height: 1.5;
+    letter-spacing: 0.2px;
+    transition: color 0.2s;
+  }
+
+  .task-item:hover .detail-item { color: #8b8fa0; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: rgba(255,42,42,0.4); }
+
+  @media (max-width: 600px) {
+    .phase-header, .phase-inner { padding-left: 20px; padding-right: 20px; }
+    h1 { letter-spacing: -2px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <header class="header">
+    <span class="eyebrow">// AIoT Learning Journey</span>
+    <h1>GARDI<span class="eye">👁</span>NT</h1>
+    <p class="subtitle">Learn every concept by building the revolution of modern surveillance.</p>
+  </header>
+
+  <!-- GLOBAL PROGRESS -->
+  <div class="progress-wrap">
+    <div class="progress-header">
+      <span>Overall Mastery</span>
+      <span class="progress-pct" id="global-pct">0 / 0</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="global-fill"></div>
+    </div>
+  </div>
+
+  <!-- PHASES -->
+  <div id="phases"></div>
+
+</div>
+
+<script>
+const phases = [
+  {
+    tag: "Module 00",
+    title: "The Core Engine",
+    color: "c-red",
+    milestone: "🔧  Gardiant Workspace Ready",
+    milestoneDesc: "Professional dev environment set up. Gardiant repo live on GitHub.",
+    tasks: [
+      {
+        id: "m0-1",
+        text: "Install VSCode + PlatformIO extension for C++ ESP32 & Arduino development.",
+        gardiant: "→ Every line of Gardiant firmware (ESP32-CAM + Arduino) is written and compiled here.",
+        learns: ["VSCode", "PlatformIO", "C++", "Toolchains"],
+        details: [
+          "Download VSCode from code.visualstudio.com and install it",
+          "Open Extensions panel (Ctrl+Shift+X) and search 'PlatformIO IDE'",
+          "Understand the PlatformIO project structure: platformio.ini / src / lib",
+          "Learn what platformio.ini does — board, framework, libraries, monitor speed",
+          "Create a test project: board = esp32cam, framework = arduino",
+          "Run your first Build (✓ icon) and understand what compiling means",
+          "Learn the difference between Build / Upload / Monitor in PlatformIO"
+        ]
+      },
+      {
+        id: "m0-2",
+        text: "Install Arduino IDE as a secondary tool for quick HC-05 & Arduino Uno testing.",
+        gardiant: "→ Some HC-05 AT command tutorials use Arduino IDE's Serial Monitor — useful to have.",
+        learns: ["Arduino IDE", "Serial Monitor", "Board manager"],
+        details: [
+          "Download Arduino IDE 2.x from arduino.cc",
+          "Install the ESP32 board package via Board Manager",
+          "Understand when to use Arduino IDE vs PlatformIO (quick tests vs real projects)",
+          "Open Serial Monitor and understand baud rate (9600 vs 115200)",
+          "Upload the built-in Blink sketch to your Arduino Uno to verify the setup works"
+        ]
+      },
+      {
+        id: "m0-3",
+        text: "Create a Wokwi account and simulate an Arduino + HC-05 circuit virtually.",
+        gardiant: "→ Test your Arduino + HC-05 wiring logic before connecting real hardware.",
+        learns: ["Wokwi", "Circuit simulation", "GPIO basics"],
+        details: [
+          "Go to wokwi.com and create a free account",
+          "Start a new Arduino Uno project",
+          "Add an HC-05 Bluetooth module from the component library",
+          "Wire TX→RX and RX→TX correctly (understand why they cross)",
+          "Add a virtual Serial Monitor and simulate sending a message",
+          "Understand what a simulation can and cannot tell you vs real hardware"
+        ]
+      },
+      {
+        id: "m0-4",
+        text: "Learn core Git commands and connect your local Gardiant project to GitHub.",
+        gardiant: "→ Every line of Gardiant code lives here. Never lose your work.",
+        learns: ["Git", "GitHub", "Version control"],
+        details: [
+          "Understand what Git is: a time machine for your code",
+          "Install Git from git-scm.com (Windows x64)",
+          "Configure your identity: git config --global user.name / user.email",
+          "Learn the 4 core commands: git init, git add ., git commit -m, git push",
+          "Understand what a commit is — a saved snapshot with a description",
+          "Create a GitHub Personal Access Token (PAT) for authentication",
+          "Clone OR connect your existing PlatformIO project folder to the_gardiant repo",
+          "Make a small change, then do your first real add → commit → push cycle"
+        ]
+      },
+      {
+        id: "m0-5",
+        text: "Learn Google Colab: create a notebook, run Python, understand the runtime.",
+        gardiant: "→ This is where face recognition and the Claude API agent will run — your cloud brain.",
+        learns: ["Google Colab", "Notebooks", "Cloud compute", "Python basics"],
+        details: [
+          "Go to colab.research.google.com and sign in with Google",
+          "Understand what a notebook is: cells of code you run one by one",
+          "Run your first cell: print('Gardiant cloud brain online')",
+          "Understand the runtime: Colab gives you a temporary Linux machine with GPU",
+          "Learn how to install libraries: !pip install opencv-python face_recognition",
+          "Mount Google Drive: from google.colab import drive — to save files permanently",
+          "Understand the 90-min idle disconnect — fine for a PoC, not for production",
+          "Save your Gardiant Colab notebook to Drive so you never lose it"
+        ]
+      }
+    ]
+  },
+  {
+    tag: "Phase 01",
+    title: "Robust Core — Arduino + HC-05 + ESP32-CAM",
+    color: "c-cyan",
+    milestone: "📡  Motion Detected → ESP32-CAM Wakes & Streams",
+    milestoneDesc: "IR sensor triggers Arduino → Bluetooth signal → ESP32-CAM wakes up, captures and streams a frame over WiFi.",
+    tasks: [
+      {
+        id: "m1-1",
+        text: "Understand the full Gardiant motion chain: IR Sensor → Arduino → HC-05 → ESP32-CAM.",
+        gardiant: "→ Before writing one line of code, map exactly what each component does and how they talk.",
+        learns: ["System architecture", "Signal flow", "Component roles", "UART", "Bluetooth"],
+        details: [
+          "Draw the full signal chain on paper: IR → Arduino pin → Arduino code → HC-05 TX → Bluetooth → ESP32 RX",
+          "Understand why Arduino handles the IR sensor instead of the ESP32-CAM (GPIO conflict, hardware complexity)",
+          "Learn what UART is: a simple 2-wire serial protocol (TX sends, RX receives)",
+          "Understand that HC-05 is just a wireless UART bridge — it replaces a wire with Bluetooth",
+          "Map the Arduino Uno pins: which pin reads IR, which pins are TX/RX for HC-05",
+          "Map the ESP32-CAM pins: which GPIO receives Bluetooth data (Serial2)",
+          "Understand voltage levels: HC-05 is 3.3V logic, Arduino is 5V — a voltage divider is needed on RX"
+        ]
+      },
+      {
+        id: "m1-2",
+        text: "Wire and configure the HC-05 Bluetooth module using AT commands.",
+        gardiant: "→ Before it talks to the ESP32, the HC-05 must be configured as a master or slave with the right baud rate.",
+        learns: ["HC-05 AT commands", "Bluetooth pairing", "Baud rate", "Serial configuration"],
+        details: [
+          "Understand HC-05 has two modes: data mode (normal use) and AT command mode (configuration)",
+          "Enter AT mode: hold the HC-05 button while powering it on — the LED blinks slowly",
+          "Connect HC-05 TX→Arduino RX, HC-05 RX→Arduino TX (via voltage divider for 5V→3.3V)",
+          "Open Serial Monitor at 38400 baud and type AT — should reply OK",
+          "Run AT+NAME=GARDIANT to rename the module",
+          "Run AT+UART=9600,0,0 to set the communication baud rate to 9600",
+          "Run AT+ROLE=0 to set it as Slave (the ESP32 will be master, or use SPP)",
+          "Run AT+ADDR? to get the HC-05 MAC address — you'll need it to pair with ESP32",
+          "Exit AT mode: power cycle without holding the button"
+        ]
+      },
+      {
+        id: "m1-3",
+        text: "Write Arduino C++ code: read the IR sensor and send a Bluetooth alert.",
+        gardiant: "→ When motion is detected, Arduino sends 'MOTION' over Bluetooth to wake the ESP32-CAM.",
+        learns: ["Arduino C++", "digitalRead", "SoftwareSerial", "Serial communication", "if/else logic"],
+        details: [
+          "Understand Arduino C++ structure: setup() runs once, loop() runs forever",
+          "Learn digitalRead(pin) — reads HIGH or LOW from a digital pin",
+          "Connect IR sensor: VCC→5V, GND→GND, OUT→Arduino pin 2",
+          "Understand IR sensor output: LOW when motion detected, HIGH when clear (check your module)",
+          "Include SoftwareSerial library to use pins 10/11 as a second serial port for HC-05",
+          "Write the logic: if IR reads LOW → BTSerial.println('MOTION') → delay to avoid spam",
+          "Add a status LED on pin 13 that blinks when motion is sent",
+          "Upload, open Serial Monitor, wave your hand in front of IR — verify 'MOTION' appears",
+          "Push the Arduino code to the_gardiant repo under /arduino/ir_motion_sender/"
+        ]
+      },
+      {
+        id: "m1-4",
+        text: "Map ESP32-CAM GPIO pins and understand its hardware constraints.",
+        gardiant: "→ The ESP32-CAM has very limited free GPIOs — know which are reserved before touching anything.",
+        learns: ["ESP32-CAM pinout", "GPIO conflicts", "Flash LED", "PSRAM", "Datasheets"],
+        details: [
+          "Download the ESP32-CAM AI-Thinker pinout diagram and study it carefully",
+          "Understand that GPIO 0, 1, 2, 3, 4, 5, 18, 19, 21, 22, 23, 25, 26, 27 are used by the camera",
+          "Identify the free GPIOs: GPIO 12, 13, 14, 15 (use carefully)",
+          "Understand GPIO 0: must be LOW to flash, must be HIGH to run — critical",
+          "Learn that GPIO 4 controls the flash LED — turning camera on may flash the LED",
+          "Identify which GPIO will receive Bluetooth data from HC-05: GPIO 14 (Serial2 RX)",
+          "Understand PSRAM: 4MB extra RAM used for storing camera frame buffers",
+          "Note: the ESP32-CAM has no USB — you need an FTDI programmer to flash it"
+        ]
+      },
+      {
+        id: "m1-5",
+        text: "Write ESP32-CAM C++ firmware: receive Bluetooth signal, wake up, capture frame.",
+        gardiant: "→ When 'MOTION' arrives via Bluetooth, the ESP32-CAM captures a JPEG frame and holds it ready.",
+        learns: ["ESP32 Serial2", "esp_camera.h", "Camera init", "Frame buffer", "C++ functions"],
+        details: [
+          "Set up Serial2 on GPIO 14 (RX) to receive data from HC-05",
+          "Include esp_camera.h and configure camera settings: PWDN, RESET, XCLK, SIOD, SIOC, all data pins",
+          "Understand camera config struct: frame size (FRAMESIZE_VGA), pixel format (PIXFORMAT_JPEG), quality",
+          "Write camera init function: esp_camera_init(&config) — check for error code",
+          "Write the main loop: if Serial2 reads 'MOTION' → capture frame → store in fb pointer",
+          "Understand camera_fb_t: it holds the JPEG bytes, width, height, length",
+          "Add Serial print statements to debug: 'Motion received', 'Frame captured: X bytes'",
+          "Test without WiFi first — just verify the camera captures when triggered",
+          "Push firmware to the_gardiant repo under /firmware/esp32cam_core/"
+        ]
+      },
+      {
+        id: "m1-6",
+        text: "Implement FreeRTOS: separate Bluetooth listening from camera capture and WiFi.",
+        gardiant: "→ Without task separation, the ESP32 blocks — camera freezes while WiFi transmits.",
+        learns: ["FreeRTOS", "xTaskCreate", "Core pinning", "Tasks", "Concurrency"],
+        details: [
+          "Understand what FreeRTOS is: a real-time operating system built into ESP32",
+          "Learn that ESP32 has 2 cores: Core 0 (system/WiFi) and Core 1 (your code by default)",
+          "Understand a Task: a function that runs independently, like a mini program inside your program",
+          "Create Task 1 (Core 1): bluetoothListenTask — reads Serial2, sets a flag when MOTION arrives",
+          "Create Task 2 (Core 1): cameraTask — waits for flag, captures frame, signals WiFi task",
+          "Create Task 3 (Core 0): wifiSendTask — takes the frame, sends it to cloud server",
+          "Use a boolean flag or FreeRTOS Queue to safely pass data between tasks",
+          "Understand why this matters: camera never drops frames because WiFi is on a separate task"
+        ]
+      },
+      {
+        id: "m1-7",
+        text: "Implement deep sleep on the ESP32-CAM between Bluetooth triggers.",
+        gardiant: "→ Gardiant draws minimal power when no motion is happening. Wakes instantly when Arduino signals.",
+        learns: ["Deep sleep", "Light sleep", "esp_sleep_enable", "Power management", "Wake sources"],
+        details: [
+          "Understand ESP32 sleep modes: deep sleep (lowest power, loses RAM) vs light sleep (keeps RAM)",
+          "For Gardiant: use light sleep so Serial2 can still wake the chip on incoming data",
+          "Learn esp_sleep_enable_uart_wakeup() — wakes ESP32 when Serial2 receives data",
+          "Understand the wake sequence: HC-05 sends 'MOTION' → ESP32 wakes → captures frame → sends → sleeps again",
+          "Measure current draw with and without sleep (multimeter or just understand conceptually)",
+          "Add a startup log: 'Gardiant online — waiting for motion...' after each wake",
+          "Test full cycle: wave hand → Arduino sends MOTION → ESP32 wakes → frame captured"
+        ]
+      }
+    ]
+  },
+  {
+    tag: "Phase 02",
+    title: "Telemetry & Swarm",
+    color: "c-gold",
+    milestone: "☁️  Frame Arrives at Cloud Server",
+    milestoneDesc: "Captured JPEG from ESP32-CAM successfully arrives at your Google Colab Python server over WiFi.",
+    tasks: [
+      {
+        id: "m2-1",
+        text: "Install Postman and test your Python server endpoint before touching the ESP32.",
+        gardiant: "→ Always verify the server works before blaming the hardware. Test the endpoint with Postman first.",
+        learns: ["Postman", "HTTP POST", "API testing", "Endpoints", "Debugging methodology"],
+        details: [
+          "Understand what an API endpoint is: a URL your ESP32 sends the image to",
+          "Install Postman from postman.com",
+          "Write a minimal Python Flask server in Colab that accepts a POST request with image data",
+          "Get your Colab public URL using ngrok or Colab's built-in port forwarding",
+          "In Postman: set method to POST, add the URL, attach a test JPEG in the body",
+          "Verify the server receives it and prints 'Image received: X bytes'",
+          "Only after this works do you connect the ESP32 — this is engineering discipline"
+        ]
+      },
+      {
+        id: "m2-2",
+        text: "Understand UART, I2C, SPI — the three wired communication protocols used in Gardiant.",
+        gardiant: "→ HC-05 uses UART. If you add sensors later (temp, distance), they use I2C or SPI.",
+        learns: ["UART", "I2C", "SPI", "Protocols", "Wired communication"],
+        details: [
+          "UART: 2 wires (TX, RX), point-to-point, used by HC-05 and GPS modules — already in Gardiant",
+          "I2C: 2 wires (SDA, SCL), supports multiple devices on same bus, used by OLED screens and sensors",
+          "SPI: 4 wires (MOSI, MISO, SCK, CS), fast, used by SD cards and displays",
+          "Understand baud rate: how many bits per second travel on UART (9600, 115200)",
+          "Understand why TX of one device connects to RX of the other (one talks, one listens)",
+          "Identify which protocol each Gardiant component uses: IR→digital pin, HC-05→UART, future sensors→I2C"
+        ]
+      },
+      {
+        id: "m2-3",
+        text: "Send the captured JPEG frame from ESP32-CAM to your Python server via WiFi HTTP POST.",
+        gardiant: "→ This is THE critical link: the image leaves the hardware and enters the AI pipeline.",
+        learns: ["WiFi connection", "HTTPClient", "HTTP POST", "Base64", "JSON payload"],
+        details: [
+          "Include WiFi.h and HTTPClient.h in your ESP32 firmware",
+          "Write WiFi connection code: WiFi.begin(ssid, password) with a connection timeout",
+          "Understand HTTP POST: you're sending data (the image) to a URL (your Colab server)",
+          "Encode the JPEG frame as Base64 — this converts binary image data to a text string safe for JSON",
+          "Build a JSON payload: {image: base64string, timestamp: millis()}",
+          "Use HTTPClient to POST the JSON to your server URL",
+          "On the Python server: decode Base64 back to bytes, save as JPEG, print confirmation",
+          "Test: wave hand → Arduino → Bluetooth → ESP32 wakes → captures → sends → Colab receives ✅"
+        ]
+      },
+      {
+        id: "m2-4",
+        text: "Learn MQTT as an alternative to HTTP for lightweight IoT messaging.",
+        gardiant: "→ HTTP works for Gardiant, but MQTT is the standard in professional IoT — know why.",
+        learns: ["MQTT", "Broker", "Publish/Subscribe", "Topics", "HiveMQ"],
+        details: [
+          "Understand why HTTP is not ideal for IoT: it's heavy, connection-per-message",
+          "MQTT is a lightweight protocol: devices publish messages to topics, others subscribe",
+          "A broker (like HiveMQ cloud, free tier) routes messages between devices",
+          "Install MQTT Explorer desktop app to see messages flowing in real time",
+          "Understand topics: 'gardiant/motion', 'gardiant/frame', 'gardiant/alert'",
+          "For Gardiant PoC: HTTP POST is fine. MQTT is the concept to understand for Phase 05 dashboard"
+        ]
+      },
+      {
+        id: "m2-5",
+        text: "Understand TLS/SSL and OTA — skip full implementation for PoC, know the concepts.",
+        gardiant: "→ In production Gardiant, the image stream would be encrypted. For PoC, understand why it matters.",
+        learns: ["TLS/SSL", "Encryption", "OTA updates", "Security concepts"],
+        details: [
+          "Understand what TLS does: encrypts data so no one can intercept your image stream on WiFi",
+          "Without TLS: anyone on your network could capture Gardiant's image stream",
+          "OTA (Over-The-Air): update ESP32 firmware over WiFi without plugging it in",
+          "For the PoC: skip TLS implementation, use plain HTTP — acceptable for local testing",
+          "Note in your Knowledge Base: production version would need TLS + certificate pinning"
+        ]
+      }
+    ]
+  },
+  {
+    tag: "Phase 03",
+    title: "Precision Mechanics",
+    color: "c-gold",
+    milestone: "🎯  Gardiant Tracks Faces Automatically",
+    milestoneDesc: "A servo-mounted camera rotates to keep a detected face centered in frame.",
+    tasks: [
+      {
+        id: "m3-1",
+        text: "Design a pan/tilt camera bracket in Autodesk Fusion 360 (student license).",
+        gardiant: "→ Gardiant stops being a fixed camera. You design the mechanical eye mount that rotates.",
+        learns: ["Fusion 360", "3D CAD", "Pan/tilt mechanics", "Tolerances"],
+        details: [
+          "Register for a free Autodesk Education license at autodesk.com/education",
+          "Learn the 3 basic operations in Fusion 360: Sketch, Extrude, Joint",
+          "Design a simple bracket that holds the ESP32-CAM module securely",
+          "Add a servo horn mount at the bottom for pan (left/right rotation)",
+          "Add a second servo mount for tilt (up/down rotation)",
+          "Export as STL for 3D printing, or adapt design for laser-cut acrylic",
+          "Understand tolerances: add 0.2mm clearance around holes for real hardware fit"
+        ]
+      },
+      {
+        id: "m3-2",
+        text: "Interface with servos using PWM and hardware timers.",
+        gardiant: "→ Control the servo that physically pans Gardiant left/right to follow movement.",
+        learns: ["PWM", "Servo control", "Hardware timers", "LEDC"],
+        details: [
+          "Understand PWM: a signal that turns on/off rapidly — duty cycle controls servo angle",
+          "Servo range: 0° = 1ms pulse, 90° = 1.5ms pulse, 180° = 2ms pulse, every 20ms",
+          "Use ESP32's LEDC peripheral for hardware PWM (more precise than software)",
+          "Write a function: setServoAngle(channel, angle) that maps 0-180° to PWM microseconds",
+          "Test pan servo: sweep from 0° to 180° slowly and verify smooth movement",
+          "Test tilt servo: same sweep, verify no mechanical interference with the bracket"
+        ]
+      },
+      {
+        id: "m3-3",
+        text: "Implement a PID controller to eliminate servo jitter.",
+        gardiant: "→ Without PID, the camera snaps violently. With PID, it glides smoothly to the target face.",
+        learns: ["PID control", "Proportional", "Integral", "Derivative", "Tuning"],
+        details: [
+          "Understand the problem: servo without control snaps instantly, causing blur and vibration",
+          "P (Proportional): move fast when far from target, slow when close — basic correction",
+          "I (Integral): correct accumulated error over time — removes steady-state offset",
+          "D (Derivative): dampen the response — prevents overshooting and oscillation",
+          "Start with P only: output = Kp × error. Tune Kp until smooth, then add D",
+          "Implement: error = target_angle - current_angle → correction → new_angle",
+          "Test: give a target angle, verify the servo arrives smoothly without bouncing"
+        ]
+      },
+      {
+        id: "m3-4",
+        text: "Calculate inverse kinematics: given a face position in pixels, find servo angles.",
+        gardiant: "→ Given a face at pixel (x,y), calculate the exact pan/tilt angles to center it. Math meets hardware.",
+        learns: ["Inverse kinematics", "Coordinate mapping", "Trigonometry", "Pixel to angle"],
+        details: [
+          "Understand the problem: OpenCV gives you face center at pixel (x,y), you need servo angles",
+          "Image center is the target: if face_x > frame_width/2, pan right; if less, pan left",
+          "Map pixel error to angle: error_x = face_x - center_x → pan_delta = error_x × scale_factor",
+          "Same for tilt: error_y = face_y - center_y → tilt_delta = error_y × scale_factor",
+          "Feed pan_delta and tilt_delta into PID controller → smooth servo movement",
+          "Test: show a face to the camera, verify Gardiant's eye rotates to follow it"
+        ]
+      }
+    ]
+  },
+  {
+    tag: "Phase 04",
+    title: "The Intelligent Eye",
+    color: "c-red",
+    milestone: "🧠  Gardiant Recognizes Known vs Unknown Faces",
+    milestoneDesc: "Full pipeline live: motion → capture → OpenCV → face_recognition → KNOWN or STRANGER.",
+    tasks: [
+      {
+        id: "m4-1",
+        text: "Configure ESP32-CAM frame quality for face recognition: resolution, JPEG, exposure.",
+        gardiant: "→ Image quality directly affects recognition accuracy. Too low = blurry, too high = too slow.",
+        learns: ["Frame buffers", "JPEG compression", "FRAMESIZE", "Camera tuning"],
+        details: [
+          "Understand frame sizes: QQVGA(160x120), QVGA(320x240), VGA(640x480), SVGA(800x600)",
+          "For face recognition: QVGA or VGA is the sweet spot — enough detail, not too heavy",
+          "JPEG quality: 10 (smallest/worst) to 63 (largest/best) — set to 12 for fast transmission",
+          "Understand that higher resolution = larger file = slower WiFi send = more delay",
+          "Test: capture at different resolutions, send to Colab, compare recognition accuracy vs speed",
+          "Set final config: FRAMESIZE_QVGA, JPEG quality 12, as a starting point"
+        ]
+      },
+      {
+        id: "m4-2",
+        text: "Build the known faces database: capture, label, and encode face images with OpenCV.",
+        gardiant: "→ This is Gardiant's memory. Point at each person, capture 50 images, encode their face.",
+        learns: ["OpenCV", "face_recognition", "face_encodings", "128-vector", "Python automation"],
+        details: [
+          "Install in Colab: !pip install face_recognition opencv-python-headless",
+          "Understand face_recognition library: wraps dlib's HOG + CNN face detection",
+          "face_recognition.load_image_file(path) → loads image as numpy array",
+          "face_recognition.face_encodings(image) → returns a 128-number vector representing the face",
+          "This 128-number vector is the fingerprint of a face — unique to each person",
+          "Write a script: for each person, load their photos, compute encodings, store in a dict",
+          "Save the encodings dict to a .pkl file on Google Drive so it persists between sessions",
+          "Structure: known_encodings = {'Saad': [enc1, enc2, ...], 'Mom': [enc1, enc2, ...]}"
+        ]
+      },
+      {
+        id: "m4-3",
+        text: "Build the recognition pipeline: receive image from ESP32, run OpenCV + face_recognition.",
+        gardiant: "→ Core AI function: input = JPEG bytes from ESP32, output = 'SAAD' or 'STRANGER'.",
+        learns: ["OpenCV decode", "compare_faces", "face_distance", "Pipeline architecture"],
+        details: [
+          "Python server receives base64 image → decode base64 → decode JPEG with OpenCV",
+          "cv2.imdecode(numpy array, cv2.IMREAD_COLOR) → converts bytes to image array",
+          "cv2.cvtColor(image, cv2.COLOR_BGR2RGB) → convert to RGB (face_recognition expects RGB)",
+          "face_recognition.face_locations(image) → finds bounding boxes of all faces",
+          "face_recognition.face_encodings(image, face_locations) → get 128-vector for each face",
+          "face_recognition.compare_faces(known_encodings, unknown_encoding, tolerance=0.6) → True/False",
+          "face_recognition.face_distance() → pick the closest match name",
+          "Return result: matched name or 'STRANGER' + bounding box coordinates"
+        ]
+      },
+      {
+        id: "m4-4",
+        text: "Explore Edge Impulse and TinyML — understand on-device inference as a concept.",
+        gardiant: "→ PoC runs recognition in Colab. Understand how it could run on-device in future.",
+        learns: ["Edge Impulse", "TinyML", "Model quantization", "On-device ML"],
+        details: [
+          "Create a free Edge Impulse account at edgeimpulse.com",
+          "Understand what TinyML is: ML models compressed to run on microcontrollers",
+          "Understand quantization: converting 32-bit float weights to 8-bit integers — 4x smaller",
+          "Edge Impulse trains lightweight 'face detected / not detected' models for ESP32",
+          "Difference from Gardiant's setup: on-device = no WiFi needed for detection, just for alert",
+          "Note this in Knowledge Base as a future upgrade path"
+        ]
+      }
+    ]
+  },
+  {
+    tag: "Phase 05",
+    title: "Autonomous Capstone",
+    color: "c-green",
+    milestone: "🤖  Full Agentic Gardiant Is Live",
+    milestoneDesc: "WhatsApp received. Known face → name + photo. Unknown face → alert + Twilio call triggered.",
+    tasks: [
+      {
+        id: "m5-1",
+        text: "Set up Twilio: WhatsApp sandbox + phone call capability.",
+        gardiant: "→ Twilio is the bridge between Gardiant's Python brain and your WhatsApp.",
+        learns: ["Twilio", "WhatsApp Sandbox", "API keys", "Voice Call API"],
+        details: [
+          "Create a free Twilio account at twilio.com",
+          "Activate the WhatsApp Sandbox: Messaging → Try it out → WhatsApp",
+          "Send the join code from your phone to activate the sandbox",
+          "Note your Account SID and Auth Token — these are your API credentials",
+          "Install: !pip install twilio in Colab",
+          "Test WhatsApp: client.messages.create(body='Gardiant online', from_='whatsapp:+...', to='whatsapp:+your_number')",
+          "Test voice call: client.calls.create(url='http://twimlets.com/message?Message=Stranger', to='+your_number', from_='+twilio_number')"
+        ]
+      },
+      {
+        id: "m5-2",
+        text: "Build the Claude API agentic decision layer — the brain that decides what action to take.",
+        gardiant: "→ Claude receives recognition result → decides: known → WhatsApp name, unknown → alert + call.",
+        learns: ["Claude API", "Agentic AI", "Tool use", "System prompts", "Decision logic"],
+        details: [
+          "Get your Claude API key from console.anthropic.com",
+          "Install: !pip install anthropic",
+          "Understand the agent's role: receives structured input, decides output action",
+          "Write a system prompt: 'You are Gardiant, an AI security agent. Given a face recognition result, decide the appropriate alert action.'",
+          "Pass recognition result as user message: 'Face detected: SAAD. Confidence: 0.92. Timestamp: 14:32'",
+          "Implement tool use: give Claude two tools — send_whatsapp(name, photo) and trigger_alert(photo)",
+          "Claude calls the right tool based on result — this is true agentic behavior",
+          "Test both paths: known face → WhatsApp notification, unknown → alert + Twilio call"
+        ]
+      },
+      {
+        id: "m5-3",
+        text: "Build a Node-RED dashboard: live visitor log, camera feed, system status.",
+        gardiant: "→ Your Gardiant control panel. See who entered, when, photo attached. A digital twin.",
+        learns: ["Node-RED", "MQTT", "Dashboard UI", "Real-time data", "Digital twins"],
+        details: [
+          "Install Node-RED: npx node-red in terminal, access at localhost:1880",
+          "Understand Node-RED: visual programming — connect blocks (nodes) to build data flows",
+          "Create a flow: MQTT input → function node (parse JSON) → dashboard table node",
+          "Every Gardiant detection publishes to MQTT topic 'gardiant/events'",
+          "Node-RED subscribes and adds events to live table: name, time, photo thumbnail",
+          "Add a gauge: system status — online / waiting / processing",
+          "Add image node: displays the last captured frame",
+          "Access dashboard at localhost:1880/ui — Gardiant's activity in real time"
+        ]
+      }
+    ]
+  },
+  {
+    tag: "Phase 06",
+    title: "Industrial Scaling",
+    color: "c-white",
+    milestone: "🏭  Gardiant Concepts at Production Scale",
+    milestoneDesc: "Understand Docker, Raspberry Pi, Coral TPU — the path from PoC to real deployment.",
+    tasks: [
+      {
+        id: "m6-1",
+        text: "Learn Docker: containers, images, volumes, and compose files.",
+        gardiant: "→ Package Gardiant's entire Python AI server into a container. Run anywhere, update in seconds.",
+        learns: ["Docker", "Containers", "Images", "Dockerfile", "Docker Compose"],
+        details: [
+          "Install Docker Desktop from docker.com",
+          "Understand what Docker solves: 'works on my machine' problem — containers eliminate it",
+          "Image vs Container: image is the recipe, container is the running instance",
+          "Write a Dockerfile for Gardiant's Python server: FROM python:3.10, COPY, RUN pip install, CMD",
+          "Build: docker build -t gardiant-server . then run: docker run -p 5000:5000 gardiant-server",
+          "Write docker-compose.yml: defines server + MQTT broker as services that start together",
+          "Understand volumes: persist the known faces .pkl file outside the container"
+        ]
+      },
+      {
+        id: "m6-2",
+        text: "Understand Raspberry Pi as a local always-on brain for Gardiant.",
+        gardiant: "→ Replace Google Colab with a Raspberry Pi. Gardiant runs 24/7 locally, no cloud dependency.",
+        learns: ["Raspberry Pi", "Linux CLI", "SSH", "systemd", "Embedded Linux"],
+        details: [
+          "Understand what a Raspberry Pi is: a full Linux computer the size of a credit card",
+          "Flash Raspberry Pi OS onto SD card using Raspberry Pi Imager",
+          "Enable SSH: add empty 'ssh' file to boot partition before first boot",
+          "Connect via SSH from your PC: ssh pi@raspberrypi.local",
+          "Learn basic Linux CLI: ls, cd, mkdir, nano, python3, pip3, systemctl",
+          "Clone Gardiant's repo on the Pi: git clone https://github.com/saadzahrawi3-cyber/the_gardiant.git",
+          "Create a systemd service: Gardiant auto-starts on boot, restarts on crash",
+          "Result: Gardiant brain runs 24/7 on a 5W device — no PC, no Colab needed"
+        ]
+      },
+      {
+        id: "m6-3",
+        text: "Understand the Google Coral TPU for 30fps real-time face recognition.",
+        gardiant: "→ The Coral TPU runs the neural net 10x faster. Gardiant goes from 2fps to real-time.",
+        learns: ["NPU/TPU", "Hardware acceleration", "TensorFlow Lite", "Edge AI", "Google Coral"],
+        details: [
+          "Understand what a TPU is: a chip designed specifically to run neural network math",
+          "CPU does face recognition at ~2fps. Coral TPU does 30+fps on the same model",
+          "The Coral USB Accelerator plugs into Raspberry Pi's USB port — instant hardware upgrade",
+          "Requires TensorFlow Lite models compiled for Edge TPU (different from regular TFLite)",
+          "face_recognition lib doesn't support TPU directly — need TFLite + Edge TPU runtime",
+          "For the PoC: Colab is enough. Coral TPU is the upgrade path to real-time tracking",
+          "Note in Knowledge Base: this is Phase 06 upgrade when you want true 30fps surveillance"
+        ]
+      },
+      {
+        id: "m6-4",
+        text: "Understand fleet management: updating multiple Gardiant cameras at once.",
+        gardiant: "→ 3 rooms = 3 cameras. Update all with one command. This is how production IoT works.",
+        learns: ["Container orchestration", "OTA", "Remote deployment", "CI/CD", "Watchtower"],
+        details: [
+          "Understand the problem: 3 rooms = 3 ESP32-CAMs + 3 Raspberry Pis to manage",
+          "OTA for ESP32: push new firmware over WiFi without physical access to the device",
+          "Docker for Raspberry Pi: docker pull gardiant-server:latest updates the AI brain everywhere",
+          "CI/CD concept: every Git push → builds new Docker image → deploys to all Pis automatically",
+          "Tools: GitHub Actions (CI), Watchtower (auto Docker updates), Portainer (visual dashboard)",
+          "For the PoC: understand the concept. This is how Gardiant would scale to a real product."
+        ]
+      }
+    ]
+  }
+];
+
+// ── RENDER ──────────────────────────────────────────────────────────
+const container = document.getElementById('phases');
+
+phases.forEach((phase, i) => {
+  const div = document.createElement('div');
+  div.className = 'phase';
+  div.dataset.phase = i;
+
+  const completed = phase.tasks.filter(t => localStorage.getItem(t.id) === 'true').length;
+  const pct = Math.round((completed / phase.tasks.length) * 100);
+
+  div.innerHTML = `
+    <div class="phase-header" onclick="togglePhase(${i})">
+      <div class="phase-top">
+        <div>
+          <span class="phase-tag">${phase.tag}</span>
+          <div class="phase-title">${phase.title}</div>
+        </div>
+        <button class="toggle-btn" aria-label="toggle">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="2,4 6,8 10,4"/>
+          </svg>
+        </button>
+      </div>
+      <div class="phase-milestone ${phase.color}">
+        <span class="dot"></span>
+        ${phase.milestone}
+      </div>
+    </div>
+
+    <div class="phase-body">
+      <div class="phase-inner">
+        <div class="divider"></div>
+        <div class="task-list">
+          ${phase.tasks.map(t => {
+            const done = localStorage.getItem(t.id) === 'true';
+            return `
+            <div class="task-item ${done ? 'done' : ''}" onclick="toggleTask('${t.id}', this)" data-id="${t.id}">
+              <div class="task-cb">
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="2">
+                  <polyline points="1,5 4,8 9,2"/>
+                </svg>
+              </div>
+              <div class="task-content">
+                <div class="task-text">${t.text}</div>
+                <div class="task-gardiant">${t.gardiant}</div>
+                ${t.details && t.details.length ? `
+                <div class="task-details">
+                  ${t.details.map(d => `<div class="detail-item">— ${d}</div>`).join('')}
+                </div>` : ''}
+                <div class="learns">
+                  ${t.learns.map(l => `<span class="chip">${l}</span>`).join('')}
+                </div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-progress">
+      <div class="phase-progress-fill" style="width:${pct}%"></div>
+    </div>
+  `;
+
+  container.appendChild(div);
+});
+
+// Open first phase by default
+document.querySelector('.phase').classList.add('open');
+
+// ── TOGGLE PHASE ────────────────────────────────────────────────────
+function togglePhase(i) {
+  const ph = document.querySelector(`.phase[data-phase="${i}"]`);
+  ph.classList.toggle('open');
+}
+
+// ── TOGGLE TASK ─────────────────────────────────────────────────────
+function toggleTask(id, el) {
+  el.classList.toggle('done');
+  const done = el.classList.contains('done');
+  localStorage.setItem(id, done);
+  updateProgress();
+}
+
+// ── PROGRESS ────────────────────────────────────────────────────────
+function updateProgress() {
+  let total = 0, completed = 0;
+  phases.forEach((phase, i) => {
+    let pDone = 0;
+    phase.tasks.forEach(t => {
+      total++;
+      if (localStorage.getItem(t.id) === 'true') { completed++; pDone++; }
+    });
+    const pct = Math.round((pDone / phase.tasks.length) * 100);
+    const fill = document.querySelector(`.phase[data-phase="${i}"] .phase-progress-fill`);
+    if (fill) fill.style.width = pct + '%';
+  });
+
+  const pct = total === 0 ? 0 : Math.round((completed / total) * 100);
+  document.getElementById('global-pct').textContent = `${completed} / ${total} — ${pct}%`;
+  document.getElementById('global-fill').style.width = pct + '%';
+}
+
+updateProgress();
+</script>
+</body>
+</html>
